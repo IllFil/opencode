@@ -708,6 +708,54 @@ Cloudflare Workers AI lets you run AI models on Cloudflare's global network dire
 
 ---
 
+### condense.chat
+
+[condense.chat](https://condense.chat) is a proxy that sits between OpenCode and your LLM provider and manages and compresses the context sent on each request. It works with the built-in Anthropic and OpenAI providers, and your provider API key is forwarded unchanged.
+
+1. Get a condense API key (it starts with `ck_api_`). See the [condense.chat docs](https://condense.chat/docs/api/#signup) for how to get API access.
+
+2. Set the key as an environment variable.
+
+   ```bash title="~/.bash_profile"
+   export CONDENSE_AUTH_TOKEN=ck_api_...
+   ```
+
+3. Point the Anthropic provider at condense in your opencode config.
+
+   ```json title="opencode.json" {6-9}
+   {
+     "$schema": "https://opencode.ai/config.json",
+     "provider": {
+       "anthropic": {
+         "options": {
+           "baseURL": "https://api.condense.chat/anthropic/v1",
+           "headers": {
+             "X-Condense-Auth-Token": "{env:CONDENSE_AUTH_TOKEN}"
+           }
+         }
+       }
+     }
+   }
+   ```
+
+   For OpenAI models, configure the `openai` provider the same way with `"baseURL": "https://api.condense.chat/openai/v1"`.
+
+4. If you haven't already, run the `/connect` command and add your Anthropic or OpenAI API key.
+
+   ```txt
+   /connect
+   ```
+
+5. Run the `/models` command to select a model.
+
+   ```txt
+   /models
+   ```
+
+condense also accepts optional headers in `options.headers`, such as `X-Condense-Session-Id` to group requests into a session. See the [condense.chat API reference](https://condense.chat/docs/reference/) for all available headers.
+
+---
+
 ### Cortecs
 
 1. Head over to the [Cortecs console](https://cortecs.ai/), create an account, and generate an API key.
